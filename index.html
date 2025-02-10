@@ -80,10 +80,9 @@
         let questions = [];
         let currentQuestion = null;
 
-        function loadQuestionsFromCSV(filename) {
-            const csvURL = `${window.location.origin}/${filename}`;
+        function loadQuestionsFromCSV(filename) {  
 
-            fetch(csvURL)
+            fetch(filename)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -155,7 +154,7 @@
             document.getElementById(pageId).classList.remove('hidden');
 
             if (pageId === 'quiz') {
-                loadQuestionsFromCSV('ushistoryquiz/Questions.csv'); // Make sure path is correct
+                loadQuestionsFromCSV('Questions.csv'); // Make sure path is correct
             }
         }
 
