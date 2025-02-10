@@ -68,36 +68,55 @@
         let questions = [];
         let currentQuestion = null;
 
-        function loadQuestionsFromCSV(filename) {  
+        function loadQuestionsFromCSV(filename) {
+    fetch(filename)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(csvData => {
+            const lines = csvData.split('\n');
+            const headers = lines[0].split(',');
 
-            fetch(filename)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.text();
-                })
-                .then(csvData => {
-                    const lines = csvData.split('\n');
-                    const headers = lines[0].split(',');
-                    for (let i = 1; i < lines.length; i++) {
-                        const values = lines[i].split(',');
+            // Check if headers exist before processing data
+            if (headers.length > 0) {
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim(); // Remove leading/trailing whitespace
+                    if (line) { // Check if the line is not empty or contains only whitespace
+                        const values = line.split(',');
                         if (values.length === headers.length) {
-                          const questionData = {};
-                          for(let j = 0; j< headers.length; j++){
-                            questionData[headers[j]] = values[j];
-                          }
-                          questions.push(questionData);
+                            const questionData = {};
+                            for (let j = 0; j < headers.length; j++) {
+                                questionData[headers[j]] = values[j];
+                            }
+                            questions.push(questionData);
+                        } else {
+                            console.warn(`Skipping line ${i + 1} due to incorrect number of values. Line: ${line}`); // More info
                         }
                     }
-                    showQuizContainer();
-                    nextQuestion();
-                })
-                .catch(error => {
-                    console.error("Error loading CSV:", error);
-                    alert("Error loading questions. Please try again later.");
-                });
-        }
+                }
+            } else {
+                console.error("No headers found in CSV data.");
+                alert("Error loading questions. CSV file might be empty or incorrectly formatted.");
+                return; // Stop further processing if no headers
+            }
+
+            if (questions.length === 0) { // Check for no questions after processing
+                console.warn("No valid questions found in the CSV file.");
+                alert("No valid questions found in the CSV file. Please check its format.");
+                return;
+            }
+
+            showQuizContainer();
+            nextQuestion();
+        })
+        .catch(error => {
+            console.error("Error loading CSV:", error);
+            alert("Error loading questions. Please try again later. Check the console for details.");
+        });
+}
 
         function showQuizContainer(){
           document.getElementById('quiz-container').classList.remove('hidden');
