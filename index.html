@@ -70,6 +70,10 @@ let currentQuestion = null;
 let questionIndex = 0; // Keep track of the current question index
 
 function loadQuestionsFromCSV(filename) {
+     // Reset variables HERE, inside the function:
+    let questions = []; // Questions array (local to the function)
+    let currentQuestion = null; // Current question (local)
+    let questionIndex = 0;   // Question index (local)
     fetch(filename)
         .then(response => {
             if (!response.ok) {
