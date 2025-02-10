@@ -121,8 +121,8 @@ function loadQuestionsFromCSV(filename) {
 }
       function displayQuestion(index) {
     if (index < 0 || index >= questions.length+1) {
-        alert("No more questions or invalid question index.");
-        return;
+        index =0;
+        questionIndex = 0;
     }
 
     currentQuestion = questions[index];
