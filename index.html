@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,8 +12,8 @@
         .quiz-card { box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; border-radius: 10px; }
         .listen-icon {
             margin-left: 10px;
-            cursor: pointer; /* Make the icon clickable */
-            font-size: 1.2em; /* Adjust icon size as needed */
+            cursor: pointer;
+            font-size: 1.2em;
         }
         .question-row, .answer-row, .hint-row {
             display: flex;
@@ -23,8 +24,8 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-           <a class="navbar-brand fw-bold" href="#">U.S. History Helper</a>
-           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <a class="navbar-brand fw-bold" href="#">U.S. History Helper</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -74,14 +75,21 @@
         let currentQuestion = null;
 
         function loadQuestionsFromCSV(filename) {
-            fetch(filename)
-                .then(response => response.text())
+            const csvURL = `${window.location.origin}/${filename}`;
+
+            fetch(csvURL)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.text();
+                })
                 .then(csvData => {
                     const lines = csvData.split('\n');
                     const headers = lines[0].split(',');
-                    for (let i = 1; i < lines.length; i++) {  // Start from index 1 to skip header row
+                    for (let i = 1; i < lines.length; i++) {
                         const values = lines[i].split(',');
-                        if (values.length === headers.length) { // Check if the line has the correct number of values
+                        if (values.length === headers.length) {
                           const questionData = {};
                           for(let j = 0; j< headers.length; j++){
                             questionData[headers[j]] = values[j];
@@ -90,10 +98,13 @@
                         }
                     }
                     showQuizContainer();
-                    nextQuestion(); // Load the first question
+                    nextQuestion();
+                })
+                .catch(error => {
+                    console.error("Error loading CSV:", error);
+                    alert("Error loading questions. Please try again later.");
                 });
         }
-
 
         function showQuizContainer(){
           document.getElementById('quiz-container').classList.remove('hidden');
@@ -121,7 +132,7 @@
 
             const randomIndex = Math.floor(Math.random() * questions.length);
             currentQuestion = questions[randomIndex];
-            questions.splice(randomIndex, 1); // Remove the current question
+            questions.splice(randomIndex, 1);
 
             document.getElementById("question").innerText = currentQuestion.Question;
             document.getElementById("answer").innerText = currentQuestion.Answer;
@@ -138,14 +149,14 @@
             document.getElementById(pageId).classList.remove('hidden');
 
             if (pageId === 'quiz') {
-                loadQuestionsFromCSV('Questions.csv'); // Load questions when quiz page is shown
+                loadQuestionsFromCSV('data/questions.csv'); // Make sure path is correct
             }
         }
 
         function closeMenu() {
             const navbarCollapse = document.getElementById('navbarNav');
             if (navbarCollapse.classList.contains('show')) {
-                new bootstrap.Collapse(navbarCollapse).toggle(); // Close the menu
+                new bootstrap.Collapse(navbarCollapse).toggle();
             }
         }
     </script>
