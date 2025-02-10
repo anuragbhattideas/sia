@@ -124,7 +124,7 @@ function loadQuestionsFromCSV(filename) {
 }
         
 function startNextQuestionTimer() {
-    timer = setTimeout(nextQuestion, 20000); // 20000 milliseconds = 20 seconds
+    timer = setTimeout(nextQuestion, 10000); // 20000 milliseconds = 20 seconds
 }
       function displayQuestion(index) {
     if (index < 0 || index >= questions.length) {
