@@ -83,7 +83,7 @@ function loadQuestionsFromCSV(filename) {
             const headers = lines[0].split(',');
 
             if (headers.length > 0) {
-                for (let i = 1; i < lines.length+2; i++) {
+                for (let i = 1; i < lines.length; i++) {
                     const line = lines[i]?.trim() ?? "";
                     if (line) {
                         const values = line.split(',');
