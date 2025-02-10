@@ -15,7 +15,7 @@
             cursor: pointer;
             font-size: 1.2em;
         }
-        .question-row, .answer-row, .hint-row {
+        .question-row { /* Only style the question row */
             display: flex;
             align-items: center;
         }
@@ -50,15 +50,11 @@
                 <h3 id="question" class="fw-bold"></h3>
                 <i class="fas fa-volume-up listen-icon" onclick="speakText('question')"></i>
             </div>
-            <div class="answer-row">
-                <p id="answer" class="hidden mt-2 fw-bold"></p>
-            </div>
-            <div class="hint-row">
-                <p id="hint" class="hidden mt-2 text-secondary"></p>
-            </div>
+            <p id="answer" class="hidden mt-2 fw-bold"></p>
+            <p id="hint" class="hidden mt-2 text-secondary"></p>
 
-            <button class="btn btn-warning mt-3" onclick="showHint(); speakText('hint')">Hint</button>
-            <button class="btn btn-success mt-3" onclick="showAnswer(); speakText('answer')">Show Answer</button>
+            <button class="btn btn-warning mt-3" onclick="showHint()">Hint</button>
+            <button class="btn btn-success mt-3" onclick="showAnswer()">Show Answer</button>
             <button class="btn btn-dark mt-3" onclick="nextQuestion()">Next Question</button>
         </div>
     </div>
