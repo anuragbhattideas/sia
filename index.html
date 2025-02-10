@@ -43,7 +43,7 @@
         <p class="text-center">Test your knowledge of American history with interactive quizzes.</p>
     </div>
 
-   <div id="quiz" class="container mt-5 hidden">
+    <div id="quiz" class="container mt-5 hidden">
         <h2 class="text-center fw-bold">U.S. History Study Time!</h2>
         <div id="quiz-container" class="quiz-card mt-4 hidden">
             <div class="question-row">
@@ -52,29 +52,21 @@
             </div>
             <div class="answer-row">
                 <p id="answer" class="hidden mt-2 fw-bold"></p>
-                <i class="fas fa-volume-up listen-icon" onclick="speakText('answer')"></i>
             </div>
             <div class="hint-row">
                 <p id="hint" class="hidden mt-2 text-secondary"></p>
-                <i class="fas fa-volume-up listen-icon" onclick="speakText('hint')"></i>
             </div>
 
-            <button class="btn btn-warning mt-3" onclick="showHint(); speakText('hint')">
-                Hint <i class="fas fa-volume-up listen-icon"></i>  </button>
-            <button class="btn btn-success mt-3" onclick="showAnswer(); speakText('answer')">
-                Show Answer <i class="fas fa-volume-up listen-icon"></i>
-            </button>
+            <button class="btn btn-warning mt-3" onclick="showHint(); speakText('hint')">Hint</button>
+            <button class="btn btn-success mt-3" onclick="showAnswer(); speakText('answer')">Show Answer</button>
             <button class="btn btn-dark mt-3" onclick="nextQuestion()">Next Question</button>
         </div>
     </div>
-
-
 
     <div id="about" class="container mt-5 hidden">
         <h2 class="text-center fw-bold">About This App</h2>
         <p class="text-center">This quiz app helps students prepare for U.S. History exams.</p>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let questions = [];
