@@ -65,10 +65,11 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let questions = [];
-        let currentQuestion = null;
+       let questions = [];
+let currentQuestion = null;
+let questionIndex = 0; // Keep track of the current question index
 
-        function loadQuestionsFromCSV(filename) {
+function loadQuestionsFromCSV(filename) {
     fetch(filename)
         .then(response => {
             if (!response.ok) {
@@ -81,11 +82,10 @@
             const lines = csvData.split('\n');
             const headers = lines[0].split(',');
 
-            // Check if headers exist before processing data
             if (headers.length > 0) {
-                for (let i = 1; i < lines.length+2; i++) {
-                    const line = lines[i]?.trim() ?? "";// Remove leading/trailing whitespace
-                    if (line) { // Check if the line is not empty or contains only whitespace
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i]?.trim() ?? "";
+                    if (line) {
                         const values = line.split(',');
                         if (values.length === headers.length) {
                             const questionData = {};
@@ -94,31 +94,50 @@
                             }
                             questions.push(questionData);
                         } else {
-                            console.warn(`Skipping line ${i + 1} due to incorrect number of values. Line: ${line}`); // More info
+                            console.warn(`Skipping line ${i + 1} due to incorrect number of values. Line: ${line}`);
                         }
                     }
                 }
             } else {
                 console.error("No headers found in CSV data.");
                 alert("Error loading questions. CSV file might be empty or incorrectly formatted.");
-                return; // Stop further processing if no headers
+                return;
             }
 
-            if (questions.length === 0) { // Check for no questions after processing
+            if (questions.length === 0) {
                 console.warn("No valid questions found in the CSV file.");
                 alert("No valid questions found in the CSV file. Please check its format.");
                 return;
             }
 
             showQuizContainer();
-            nextQuestion();
+            displayQuestion(questionIndex); // Display the first question
         })
         .catch(error => {
             console.error("Error loading CSV:", error);
             alert("Error loading questions. Please try again later. Check the console for details.");
         });
 }
+      function displayQuestion(index) {
+    if (index < 0 || index >= questions.length) {
+        alert("No more questions or invalid question index.");
+        return;
+    }
 
+    currentQuestion = questions[index];
+    document.getElementById("question").innerText = currentQuestion.Question;
+    document.getElementById("answer").innerText = currentQuestion.Answer;
+    document.getElementById("hint").innerText = currentQuestion.Hint;
+
+    document.getElementById("answer").classList.add("hidden");
+    document.getElementById("hint").classList.add("hidden");
+}
+
+function nextQuestion() {
+    questionIndex++;
+    displayQuestion(questionIndex);
+}
+  
         function showQuizContainer(){
           document.getElementById('quiz-container').classList.remove('hidden');
         }
@@ -137,24 +156,7 @@
             document.getElementById("answer").classList.remove("hidden");
         }
 
-        function nextQuestion() {
-            if (questions.length === 0) {
-                alert("No more questions!");
-                return;
-            }
-
-            const randomIndex = Math.floor(Math.random() * questions.length);
-            currentQuestion = questions[randomIndex];
-            questions.splice(randomIndex, 1);
-
-            document.getElementById("question").innerText = currentQuestion.Question;
-            document.getElementById("answer").innerText = currentQuestion.Answer;
-            document.getElementById("hint").innerText = currentQuestion.Hint;
-
-            document.getElementById("answer").classList.add("hidden");
-            document.getElementById("hint").classList.add("hidden");
-        }
-
+       
         function showPage(pageId) {
             document.getElementById('home').classList.add('hidden');
             document.getElementById('quiz').classList.add('hidden');
