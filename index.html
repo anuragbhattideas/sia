@@ -11,6 +11,14 @@
         .quiz-card { box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; border-radius: 10px; }
         .btn-option { width: 100%; margin-bottom: 10px; }
         .nav-pills .nav-link.active { background-color: #007bff; color: white; }
+        .listen-button { /* Style for the listen buttons */
+            margin-left: 10px; /* Space between text and button */
+            vertical-align: middle; /* Align button vertically */
+        }
+        .question-row, .answer-row, .hint-row {
+          display: flex; /* Enable flexbox for positioning */
+          align-items: center; /* Vertically center content */
+        }
     </style>
 </head>
 <body>
@@ -38,17 +46,25 @@
     <div id="quiz" class="container mt-5 hidden">
         <h2 class="text-center fw-bold">U.S. History Study Time!</h2>
         <div id="quiz-container" class="quiz-card mt-4 hidden">
-            <h3 id="question" class="fw-bold"></h3>
-            <button class="btn btn-secondary mt-2" onclick="speakText('question')">🔊 Listen</button>
-            <p id="answer" class="hidden mt-2 fw-bold"></p>
-            <button class="btn btn-secondary mt-2" onclick="speakText('answer')">🔊 Listen</button>
-            <p id="hint" class="hidden mt-2 text-secondary"></p>
-            <button class="btn btn-secondary mt-2" onclick="speakText('hint')">🔊 Listen</button>
+            <div class="question-row">
+              <h3 id="question" class="fw-bold"></h3>
+              <button class="btn btn-secondary listen-button" onclick="speakText('question')">🔊 Listen</button>
+            </div>
+            <div class="answer-row">
+              <p id="answer" class="hidden mt-2 fw-bold"></p>
+              <button class="btn btn-secondary listen-button" onclick="speakText('answer')">🔊 Listen</button>
+            </div>
+            <div class="hint-row">
+              <p id="hint" class="hidden mt-2 text-secondary"></p>
+              <button class="btn btn-secondary listen-button" onclick="speakText('hint')">🔊 Listen</button>
+            </div>
+
             <button class="btn btn-warning mt-3" onclick="showHint()">Hint</button>
             <button class="btn btn-success mt-3" onclick="showAnswer()">Show Answer</button>
             <button class="btn btn-dark mt-3" onclick="nextQuestion()">Next Question</button>
         </div>
     </div>
+
 
     <div id="about" class="container mt-5 hidden">
         <h2 class="text-center fw-bold">About This App</h2>
