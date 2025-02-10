@@ -43,7 +43,7 @@
         <p class="text-center">Test your knowledge of American history with interactive quizzes.</p>
     </div>
 
-    <div id="quiz" class="container mt-5 hidden">
+   <div id="quiz" class="container mt-5 hidden">
         <h2 class="text-center fw-bold">U.S. History Study Time!</h2>
         <div id="quiz-container" class="quiz-card mt-4 hidden">
             <div class="question-row">
@@ -58,11 +58,16 @@
                 <p id="hint" class="hidden mt-2 text-secondary"></p>
                 <i class="fas fa-volume-up listen-icon" onclick="speakText('hint')"></i>
             </div>
-            <button class="btn btn-warning mt-3" onclick="showHint()">Hint</button>
-            <button class="btn btn-success mt-3" onclick="showAnswer()">Show Answer</button>
+
+            <button class="btn btn-warning mt-3" onclick="showHint(); speakText('hint')">
+                Hint <i class="fas fa-volume-up listen-icon"></i>  </button>
+            <button class="btn btn-success mt-3" onclick="showAnswer(); speakText('answer')">
+                Show Answer <i class="fas fa-volume-up listen-icon"></i>
+            </button>
             <button class="btn btn-dark mt-3" onclick="nextQuestion()">Next Question</button>
         </div>
     </div>
+
 
     <div id="about" class="container mt-5 hidden">
         <h2 class="text-center fw-bold">About This App</h2>
