@@ -113,11 +113,21 @@ function loadQuestionsFromCSV(filename) {
 
             showQuizContainer();
             displayQuestion(questionIndex); // Display the first question
+
+            // Speak the question by default when loaded:
+            speakText('question');
+
+            // Set the timer for the next question:
+            startNextQuestionTimer();
         })
         .catch(error => {
             console.error("Error loading CSV:", error);
             alert("Error loading questions. Please try again later. Check the console for details.");
         });
+}
+        
+function startNextQuestionTimer() {
+    timer = setTimeout(nextQuestion, 20000); // 20000 milliseconds = 20 seconds
 }
       function displayQuestion(index) {
     if (index < 0 || index >= questions.length) {
