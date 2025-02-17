@@ -125,10 +125,10 @@ function loadQuestionsFromCSV(filename) {
         });
 }
         
-      function displayQuestion(index) {
+function displayQuestion(index) {
     if (index < 0 || index >= questions.length) {
-        index =0;
-        questionIndex = 0;
+        alert("No more questions available.");
+        return;
     }
 
     currentQuestion = questions[index];
@@ -139,10 +139,10 @@ function loadQuestionsFromCSV(filename) {
     document.getElementById("answer").classList.add("hidden");
     document.getElementById("hint").classList.add("hidden");
 
-    
     // Speak the question by default when loaded:
     speakText('question');
 }
+
 
 function nextQuestion() {
     questionIndex++;
