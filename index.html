@@ -56,6 +56,9 @@
             <button class="btn btn-warning mt-3" onclick="showHint()">Hint</button>
             <button class="btn btn-success mt-3" onclick="showAnswer()">Show Answer</button>
             <button class="btn btn-dark mt-3" onclick="nextQuestion()">Next Question</button>
+            <button class="btn btn-secondary mt-3" onclick="prevQuestion()">Previous Question</button>
+            <button class="btn btn-info mt-3" onclick="skipTenQuestions()">Skip 10 Questions</button>
+
         </div>
     </div>
 
@@ -145,6 +148,25 @@ function nextQuestion() {
     questionIndex++;
     displayQuestion(questionIndex);
 }
+
+function prevQuestion() {
+    if (questionIndex > 0) {
+        questionIndex--;
+        displayQuestion(questionIndex);
+    } else {
+        alert("You're already at the first question.");
+    }
+}
+
+function skipTenQuestions() {
+    if (questionIndex + 10 < questions.length) {
+        questionIndex += 10;
+        displayQuestion(questionIndex);
+    } else {
+        alert("There aren't that many questions left to skip.");
+    }
+}
+
   
         function showQuizContainer(){
           document.getElementById('quiz-container').classList.remove('hidden');
