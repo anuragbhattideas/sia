@@ -3,207 +3,1417 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>U.S. History Helper</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>SIA - Basic Web App Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #f8f9fa; }
-        .hidden { display: none; }
-        .quiz-card { box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); padding: 20px; border-radius: 10px; }
-        .listen-icon {
-            margin-left: 10px;
-            cursor: pointer;
-            font-size: 1.2em;
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* gray-100 */
+            margin: 0;
         }
-        .question-row { /* Only style the question row */
+        .app-shell {
+            display: flex;
+            min-height: 100vh;
+        }
+        .left-nav {
+            width: 240px; /* Fixed width for nav */
+            background-color: #1f2937; /* gray-800 */
+            color: #d1d5db; /* gray-300 */
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0; /* Prevent nav from shrinking */
+        }
+        .left-nav .logo {
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* bold */
+            color: #4f46e5; /* indigo-600 */
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .nav-link {
+            display: block;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem; /* rounded-md */
+            margin-bottom: 0.5rem;
+            color: #d1d5db; /* gray-300 */
+            text-decoration: none;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .nav-link:hover {
+            background-color: #374151; /* gray-700 */
+            color: white;
+        }
+        .nav-link.active {
+            background-color: #4f46e5; /* indigo-600 */
+            color: white;
+            font-weight: 500;
+        }
+        .main-content-area {
+            flex-grow: 1;
+            padding: 2rem;
+            overflow-y: auto; /* Allow scrolling for content */
+        }
+        .app-container { /* This will now wrap content within main-content-area */
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); /* shadow-lg */
+            width: 100%;
+            max-width: 800px; /* Max width for content views */
+            margin: 0 auto; /* Center content views */
+        }
+        .login-container { /* Specific container for login view */
+             background-color: white;
+            padding: 2.5rem; 
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 480px; 
+            margin: 3rem auto; 
+        }
+
+        .view { display: none; }
+        .view.active { display: block; }
+
+        .button-primary {
+            background-color: #4f46e5; color: white; padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem; font-weight: 500; transition: background-color 0.2s;
+            text-align: center;
+        }
+        .button-primary:hover { background-color: #4338ca; }
+        .button-secondary {
+            background-color: #e5e7eb; color: #374151; padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem; font-weight: 500; transition: background-color 0.2s;
+        }
+        .button-secondary:hover { background-color: #d1d5db; }
+        .button-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem; /* text-sm */
+        }
+        .button-link {
+            background: none;
+            border: none;
+            color: #4f46e5; /* indigo-600 */
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+            font-size: 0.875rem;
+        }
+        .button-link:hover {
+            color: #3730a3; /* indigo-800 */
+        }
+        .input-field, .select-field {
+            border: 1px solid #d1d5db; padding: 0.75rem 1rem; 
+            border-radius: 0.375rem; width: 100%; margin-bottom: 1rem; 
+            background-color: white; 
+        }
+        .label-text { display: block; color: #374151; font-weight: 500; margin-bottom: 0.25rem; }
+        .sub-label-text { font-size: 0.875rem; color: #6b7280; margin-bottom: 0.5rem; }
+
+        .meeting-item {
+            border: 1px solid #e5e7eb; padding: 1rem; border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            transition: box-shadow 0.2s;
+        }
+        .meeting-item:hover { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
+        .meeting-item-clickable-area { cursor: pointer; }
+        .meeting-item-actions { margin-top: 0.75rem; display: flex; gap: 0.75rem; justify-content: flex-end;}
+
+
+        .config-section, .settings-group, .analytics-section, .profile-section { /* Added .profile-section */
+             margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid #e5e7eb;
+        }
+        .config-section:last-child, .settings-group:last-child, .analytics-section:last-child, .profile-section:last-child { /* Added .profile-section */
+             border-bottom: none; margin-bottom: 0; padding-bottom: 0;
+        }
+        .config-section h3, .settings-group h3, .analytics-section h3, .settings-tab-content h3, .profile-section h3 { /* Added .profile-section */
+            font-size: 1.125rem; font-weight: 600; color: #1f2937; margin-bottom: 1rem;
+        }
+        .checkbox-label { display: flex; align-items: center; margin-bottom: 0.5rem; color: #374151; font-size: 0.875rem;}
+        .checkbox-label input[type="checkbox"] { margin-right: 0.5rem; accent-color: #4f46e5; }
+
+        /* Calendar Styles */
+        .calendar-container { margin-top: 1.5rem; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background-color: #e5e7eb; border: 1px solid #e5e7eb; }
+        .calendar-day-header { background-color: #f9fafb; font-weight: 500; text-align: center; padding: 0.5rem 0.25rem; font-size: 0.875rem; color: #4b5563; }
+        .calendar-day { background-color: white; padding: 0.5rem; min-height: 80px; font-size: 0.875rem; position: relative; }
+        .calendar-day.other-month { background-color: #f9fafb; color: #9ca3af; }
+        .calendar-day .day-number { font-weight: 500; }
+        .calendar-day .meeting-indicator {
+            display: block; background-color: #60a5fa; color: white; font-size: 0.75rem;
+            padding: 0.125rem 0.375rem; border-radius: 0.25rem; margin-top: 0.25rem;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;
+        }
+         .calendar-day .meeting-indicator:hover { background-color: #3b82f6; }
+        .dashboard-view-toggle { margin-bottom: 1rem; text-align: right; }
+
+        /* Summary View Styles */
+        .summary-item {
+            border: 1px solid #e5e7eb; padding: 1rem; border-radius: 0.5rem;
+            margin-bottom: 1rem; cursor: pointer; transition: background-color 0.2s;
+        }
+        .summary-item:hover { background-color: #f9fafb; }
+        .summary-content-display {
+            background-color: #f9fafb; padding: 1.5rem; border-radius: 0.5rem;
+            border: 1px solid #e5e7eb; white-space: pre-wrap; 
+            font-family: monospace; font-size: 0.9rem; line-height: 1.5;
+            margin-bottom: 1rem; 
+        }
+        /* Analytics Card Styles */
+        .analytics-card {
+            background-color: #f9fafb; 
+            padding: 1.5rem;
+            border-radius: 0.5rem; 
+            border: 1px solid #e5e7eb; 
+            text-align: center;
+        }
+        .analytics-card .value {
+            font-size: 2.25rem; 
+            font-weight: 700; 
+            color: #4f46e5; 
+        }
+        .analytics-card .label {
+            font-size: 0.875rem; 
+            color: #6b7280; 
+            margin-top: 0.25rem;
+        }
+        .analytics-list-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f4f6; 
+        }
+        .analytics-list-item:last-child {
+            border-bottom: none;
+        }
+        .participant-list-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .participant-list-item:last-child { border-bottom: none; }
+
+        /* Social Login Icon Button */
+        .social-icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px; 
+            height: 48px; 
+            border: 1px solid #d1d5db; 
+            border-radius: 0.375rem; 
+            background-color: white;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .social-icon-btn:hover {
+            background-color: #f3f4f6; 
+        }
+        .social-icon-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+        .social-icon-btn.google svg { fill: #DB4437; }
+        .social-icon-btn.microsoft svg { fill: #0078D4; } 
+        .social-icon-btn.apple svg { fill: #000000; }
+        .social-icon-btn.facebook svg { fill: #1877F2; }
+        .social-icon-btn.sso svg { fill: #4b5563; } 
+
+        /* Settings Tabs */
+        .settings-tabs {
+            border-bottom: 1px solid #d1d5db; /* gray-300 */
+            margin-bottom: 1.5rem;
+        }
+        .settings-tab-button {
+            padding: 0.75rem 1.25rem;
+            margin-bottom: -1px; /* Overlap border */
+            border: 1px solid transparent;
+            border-top-left-radius: 0.375rem; /* rounded-md */
+            border-top-right-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 500; /* medium */
+            color: #6b7280; /* gray-500 */
+        }
+        .settings-tab-button:hover {
+            color: #374151; /* gray-700 */
+            border-color: #e5e7eb; /* gray-200 */
+        }
+        .settings-tab-button.active {
+            color: #4f46e5; /* indigo-600 */
+            border-color: #d1d5db #d1d5db white; /* gray-300 for sides, white for bottom to merge */
+            background-color: white;
+        }
+        .settings-tab-content {
+            display: none;
+        }
+        .settings-tab-content.active {
+            display: block;
+        }
+        
+        /* Profile View Styles */
+        .profile-avatar-placeholder {
+            width: 128px; /* w-32 */
+            height: 128px; /* h-32 */
+            background-color: #e5e7eb; /* gray-200 */
+            border-radius: 9999px; /* rounded-full */
             display: flex;
             align-items: center;
+            justify-content: center;
+            font-size: 2.25rem; /* text-4xl */
+            color: #4b5563; /* gray-600 */
+            margin: 0 auto 1.5rem auto; /* Center and margin bottom */
         }
+        .profile-info-item {
+            margin-bottom: 0.75rem;
+        }
+        .profile-info-item .label {
+            font-weight: 600; /* semibold */
+            color: #374151; /* gray-700 */
+        }
+        .profile-info-item .value {
+            color: #1f2937; /* gray-800 */
+        }
+
+        /* Integration Card Styles */
+        .integration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); /* Responsive grid */
+            gap: 1rem;
+        }
+        .integration-card {
+            border: 1px solid #e5e7eb; /* gray-200 */
+            border-radius: 0.5rem; /* rounded-lg */
+            padding: 1.5rem 1rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            background-color: white;
+            transition: box-shadow 0.2s;
+        }
+        .integration-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .integration-card.connected {
+            border-color: #34d399; /* green-400 */
+            background-color: #f0fdf4; /* green-50 */
+        }
+        .integration-icon {
+            width: 48px; /* w-12 */
+            height: 48px; /* h-12 */
+            margin-bottom: 0.75rem; /* mb-3 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .integration-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+        .integration-name {
+            font-weight: 500; /* medium */
+            color: #1f2937; /* gray-800 */
+            margin-bottom: 0.25rem;
+        }
+        .integration-status {
+            font-size: 0.75rem; /* text-xs */
+            margin-bottom: 0.75rem; /* mb-3 */
+        }
+        .integration-status.connected {
+            color: #059669; /* green-600 */
+        }
+        .integration-status.not-connected {
+            color: #9ca3af; /* gray-400 */
+        }
+
+
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="#">U.S. History Helper</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('home'); closeMenu()">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('quiz'); closeMenu()">Quiz</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('about'); closeMenu()">About</a></li>
-                </ul>
+    <div id="loginScreen" class="view active">
+        <div class="login-container">
+            <header class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-indigo-600">SIA Demo</h1>
+                <p class="text-gray-600">Connect to Simulate</p>
+            </header>
+            <h2 class="text-2xl font-semibold text-gray-700 mb-6 text-center">Connect Your Account</h2>
+            <p class="text-gray-600 mb-4 text-center">To get started, please connect your primary account.</p>
+            
+            <div class="space-y-3">
+                <button id="connectWithGoogleBtn" class="button-primary w-full flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M22.56 12.25C22.56 11.47 22.49 10.72 22.37 10H12.25V14.25H18.03C17.74 15.54 16.93 16.62 15.76 17.37V19.94H19.61C21.52 18.17 22.56 15.47 22.56 12.25Z"></path><path d="M12.25 23C15.24 23 17.79 22.03 19.61 20.06L15.76 17.49C14.79 18.16 13.59 18.56 12.25 18.56C9.69 18.56 7.53 16.94 6.75 14.69H2.76V17.37C4.59 20.74 8.14 23 12.25 23Z"></path><path d="M6.75 14.69C6.56 14.15 6.44 13.58 6.44 13C6.44 12.42 6.56 11.85 6.75 11.31V8.63H2.76C1.96 10.06 1.5 11.47 1.5 13C1.5 14.53 1.96 15.94 2.76 17.37L6.75 14.69Z"></path><path d="M12.25 7.44C13.72 7.44 15.04 7.95 16.03 8.88L19.69 5.22C17.79 3.44 15.24 2.5 12.25 2.5C8.14 2.5 4.59 4.76 2.76 8.13L6.75 10.81C7.53 8.56 9.69 7.44 12.25 7.44Z"></path></svg>
+                    Connect with Google
+                </button>
+                <button id="connectWithMicrosoftBtn" class="button-primary w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center">
+                     <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" fill="#FFFFFF"> <path d="M10.55 2.1H2.09998V10.55H10.55V2.1Z"/> <path d="M21.45 2.1H12.9999V10.55H21.45V2.1Z"/> <path d="M10.55 12.95H2.09998V21.4H10.55V12.95Z"/> <path d="M21.45 12.95H12.9999V21.4H21.45V12.95Z"/> </svg>
+                    Connect with Microsoft
+                </button>
             </div>
-        </div>
-    </nav>
 
-    <div id="home" class="container mt-5">
-        <h2 class="text-center fw-bold">Welcome to the U.S. History Challenge App!</h2>
-        <p class="text-center">Test your knowledge of American history with interactive quizzes.</p>
-    </div>
-
-    <div id="quiz" class="container mt-5 hidden">
-        <h2 class="text-center fw-bold">U.S. History Study Time!</h2>
-        <div id="quiz-container" class="quiz-card mt-4 hidden">
-            <div class="question-row">
-                <h3 id="question" class="fw-bold"></h3>
-                <i class="fas fa-volume-up listen-icon" onclick="speakText('question')"></i>
+            <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center">
+                    <span class="bg-white px-2 text-sm text-gray-500">or sign in with</span>
+                </div>
             </div>
-            <p id="answer" class="hidden mt-2 fw-bold"></p>
-            <p id="hint" class="hidden mt-2 text-secondary"></p>
 
-            <button class="btn btn-warning mt-3" onclick="showHint()">Hint</button>
-            <button class="btn btn-success mt-3" onclick="showAnswer()">Show Answer</button>
-            <button class="btn btn-dark mt-3" onclick="nextQuestion()">Next Question</button>
-            <button class="btn btn-secondary mt-3" onclick="prevQuestion()">Previous Question</button>
-            <button class="btn btn-info mt-3" onclick="skipTenQuestions()">Skip 10 Questions</button>
-
+            <div class="flex justify-center space-x-3 mb-6">
+                <button title="Sign in with SSO" class="social-icon-btn sso">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.586 2.586L10.121 5.05L8 2.929L7.293 3.636L9.414 5.758L7.05 8.121L9.172 10.243L11.536 7.879L13.657 10L14.364 9.293L12.242 7.172L14.607 4.808L12.586 2.586ZM5 12C5 8.13401 8.13401 5 12 5C12.7394 5 13.4513 5.11343 14.1087 5.32134L15.534 3.89604C14.4433 3.32084 13.2426 3 12 3C7.02944 3 3 7.02944 3 12C3 16.1563 5.97008 19.6109 10 20.7029V18.6081C6.96042 17.6024 5 15.0431 5 12ZM21 12C21 16.1563 18.0299 19.6109 14 20.7029V18.6081C17.0396 17.6024 19 15.0431 19 12C19 11.5995 18.9467 11.2084 18.8467 10.8364L20.6654 9.87771C20.883 10.5487 21 11.2606 21 12Z"></path></svg>
+                </button>
+                <button title="Sign in with Apple" class="social-icon-btn apple">
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.2258 12.292C19.2341 11.6333 19.0314 11.0006 18.6504 10.4333C18.2695 9.86913 17.7275 9.39181 17.0918 9.05833C16.3333 8.66667 15.2916 8.54167 14.3333 8.58333C13.2916 8.58333 12.4166 8.875 11.7916 9.33333C11.1249 9.79167 10.6249 10.375 10.3333 11.0417C9.41659 10.9167 8.58325 10.5417 7.91659 9.91667C7.08325 9.08333 6.58325 8.16667 6.33325 7.08333C6.54159 7.08333 6.83325 7.04167 7.16659 6.95833C7.54159 6.875 7.87492 6.70833 8.16659 6.45833C7.58325 5.5 6.70825 4.91667 5.58325 4.75C4.70825 5.58333 4.20825 6.58333 4.08325 7.75C4.04159 8.95833 4.37492 10.0417 5.04159 11C5.58325 11.7917 6.29159 12.4167 7.12492 12.8333C6.95825 13.4583 6.87492 14.0833 6.87492 14.75C6.87492 16.0833 7.20825 17.2083 7.91659 18.125C8.58325 19 9.41659 19.5417 10.4166 19.75C11.2916 19.9167 12.1249 20 12.9166 20C13.2499 20 13.5833 19.9583 13.9166 19.875C14.2916 19.7917 14.5833 19.7083 14.7916 19.625C14.7916 19.625 14.8333 19.5833 14.9166 19.5417C15.8333 19.0833 16.5416 18.4583 17.0833 17.7083C17.5833 16.9167 17.9166 16.0833 18.0833 15.125C17.0833 14.5833 16.5833 13.8333 16.5833 12.9167C16.5833 12.5 16.6666 12.125 16.8333 11.7917C17.0833 12.2083 17.4583 12.5417 17.9166 12.7917C18.4166 13.0417 18.8749 13.1667 19.2916 13.1667C19.2916 13.1667 19.2916 13.1667 19.2916 13.1667C19.2499 12.9083 19.2258 12.604 19.2258 12.292Z"></path></svg>
+                </button>
+                <button id="iconSignInWithGoogleBtn" title="Sign in with Google" class="social-icon-btn google"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25C22.56 11.47 22.49 10.72 22.37 10H12.25V14.25H18.03C17.74 15.54 16.93 16.62 15.76 17.37V19.94H19.61C21.52 18.17 22.56 15.47 22.56 12.25Z"></path><path d="M12.25 23C15.24 23 17.79 22.03 19.61 20.06L15.76 17.49C14.79 18.16 13.59 18.56 12.25 18.56C9.69 18.56 7.53 16.94 6.75 14.69H2.76V17.37C4.59 20.74 8.14 23 12.25 23Z"></path><path d="M6.75 14.69C6.56 14.15 6.44 13.58 6.44 13C6.44 12.42 6.56 11.85 6.75 11.31V8.63H2.76C1.96 10.06 1.5 11.47 1.5 13C1.5 14.53 1.96 15.94 2.76 17.37L6.75 14.69Z"></path><path d="M12.25 7.44C13.72 7.44 15.04 7.95 16.03 8.88L19.69 5.22C17.79 3.44 15.24 2.5 12.25 2.5C8.14 2.5 4.59 4.76 2.76 8.13L6.75 10.81C7.53 8.56 9.69 7.44 12.25 7.44Z"></path></svg>
+                </button>
+                <button title="Sign in with Facebook" class="social-icon-btn facebook">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12C22 6.477 17.523 2 12 2S2 6.477 2 12C2 16.99 5.863 21.094 10.5 21.855V14.5H7.5V12H10.5V9.747C10.5 7.021 12.172 5.5 14.657 5.5C15.866 5.5 16.929 5.696 17.167 5.735V8H15.675C14.348 8 14 8.661 14 9.495V12H17L16.5 14.5H14V21.855C18.137 21.094 21 16.99 21 12H22Z"></path></svg>
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-6 text-center">This is a simulation. No actual connection will be made via icons other than Google.</p>
+            <p class="text-center text-sm text-gray-600 mt-6">
+                Don't have an account? <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">Sign up</a>
+            </p>
         </div>
     </div>
 
-    <div id="about" class="container mt-5 hidden">
-        <h2 class="text-center fw-bold">About This App</h2>
-        <p class="text-center">This quiz app helps students prepare for U.S. History exams.</p>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-       let questions = [];
-let currentQuestion = null;
-let questionIndex = 0; // Keep track of the current question index
+    <div id="appShell" class="app-shell hidden">
+        <nav class="left-nav">
+            <div class="logo">SIA</div>
+            <a href="#" id="navHome" class="nav-link active">Home</a> 
+            <a href="#" id="navSummaries" class="nav-link">Summaries</a>
+            <a href="#" id="navAnalytics" class="nav-link">Analytics</a> 
+            <a href="#" id="navSettings" class="nav-link">Settings</a>
+            <a href="#" id="navProfile" class="nav-link">Profile</a> 
+            <div class="mt-auto"> <button id="logoutBtn" class="nav-link w-full text-left">Logout</button>
+            </div>
+        </nav>
 
-function loadQuestionsFromCSV(filename) {
+        <main class="main-content-area">
+            <div id="appContentContainer">
+                <div id="homeView" class="view app-container"> 
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-2xl font-semibold text-gray-700">Your Meetings</h2>
+                    </div>
+                    <div class="dashboard-view-toggle">
+                        <button id="toggleListViewBtn" class="button-secondary button-sm">List View</button>
+                        <button id="toggleCalendarViewBtn" class="button-primary button-sm ml-2">Calendar View</button>
+                    </div>
+                    <div id="meetingListView">
+                        <div id="meetingList" class="space-y-4"></div>
+                        <p id="noMeetingsMessage" class="text-gray-500 mt-4 hidden">No meetings found in your calendar.</p>
+                    </div>
+                    <div id="calendarView" class="calendar-container hidden">
+                        <div class="calendar-header">
+                            <button id="prevMonthBtn" class="button-secondary button-sm">&larr; Prev</button>
+                            <h3 id="currentMonthYear" class="text-xl font-semibold text-gray-700"></h3>
+                            <button id="nextMonthBtn" class="button-secondary button-sm">Next &rarr;</button>
+                        </div>
+                        <div class="calendar-grid" id="calendarDayHeaders"></div>
+                        <div class="calendar-grid" id="calendarGrid"></div>
+                    </div>
+                </div>
+
+                <div id="configView" class="view app-container">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-700">Configure Meeting</h2>
+                        <button id="backToHomeBtn" class="text-sm text-indigo-600 hover:text-indigo-800">&larr; Back to Home</button> </div>
+                    <div class="flex justify-between items-baseline mb-1">
+                        <h3 id="configMeetingTitle" class="text-xl font-medium text-gray-800"></h3>
+                        <div>
+                            <button id="configViewSummaryBtn" class="button-link hidden mr-3">View Summary</button>
+                            <button id="configViewAnalyticsBtn" class="button-link hidden">View Analytics</button>
+                        </div>
+                    </div>
+                    <p id="configMeetingTime" class="text-sm text-gray-500 mb-6"></p>
+                    <form id="meetingConfigForm">
+                        <input type="hidden" id="configMeetingId">
+                        <div class="config-section">
+                            <h3>Pre-Standup Setup</h3>
+                            <div>
+                                <label for="timeLimitPerSpeaker" class="label-text">Time Limit Per Speaker (minutes):</label>
+                                <input type="number" id="timeLimitPerSpeaker" name="timeLimitPerSpeaker" class="input-field" value="5" min="1">
+                            </div>
+                            <div class="mt-4">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="enableReminders" name="enableReminders" checked>
+                                    Enable Pre-meeting Reminders
+                                </label>
+                            </div>
+                        </div>
+                        <div class="config-section">
+                            <h3>During Standup Settings</h3>
+                             <label class="checkbox-label">
+                                <input type="checkbox" id="enforceTimeboxing" name="enforceTimeboxing" checked>
+                                Enforce Time-boxing
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="nudgeVagueUpdates" name="nudgeVagueUpdates">
+                                Nudge for Vague Updates
+                            </label>
+                             <label class="checkbox-label">
+                                <input type="checkbox" id="redirectOffTopic" name="redirectOffTopic">
+                                Redirect Off-topic Discussions
+                            </label>
+                        </div>
+                        <div class="config-section">
+                            <h3>Post-Standup Actions</h3>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="generateReport" name="generateReport" checked>
+                                Generate Summarized Report
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="emailReport" name="emailReport">
+                                Email Report to Attendees
+                            </label>
+                        </div>
+                        <div class="mt-8 flex justify-end space-x-3">
+                            <button type="button" id="cancelConfigBtn" class="button-secondary">Cancel</button>
+                            <button type="submit" class="button-primary">Save Configuration</button>
+                        </div>
+                    </form>
+                    <div id="configSavedMessage" class="mt-4 p-3 bg-green-100 text-green-700 border border-green-300 rounded-md hidden">
+                        Configuration saved successfully!
+                    </div>
+                </div>
+
+                <div id="summariesView" class="view app-container">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-700">Meeting Summaries</h2>
+                        <button id="backToSummariesListBtn" class="button-secondary button-sm hidden">&larr; Back to List</button>
+                    </div>
+                    <div id="summaryListContainer">
+                        <div id="summaryList" class="space-y-2"></div>
+                        <p id="noSummariesMessage" class="text-gray-500 mt-4 hidden">No summaries available yet. Configure meetings to generate reports.</p>
+                    </div>
+                    <div id="summaryContentContainer" class="hidden">
+                        <h3 id="summaryContentTitle" class="text-xl font-medium text-gray-800 mb-1"></h3>
+                        <p id="summaryContentDate" class="text-sm text-gray-500 mb-4"></p>
+                        <div id="summaryContentDisplay" class="summary-content-display"></div>
+                        <div class="mt-4">
+                             <button id="summaryViewAnalyticsBtn" class="button-primary button-sm hidden">View Detailed Analytics</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="meetingAnalyticsView" class="view app-container">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-700">Per-Meeting Analytics</h2>
+                        <button id="backToHomeFromMeetingAnalyticsBtn" class="button-secondary button-sm">&larr; Back to Home</button> </div>
+                    <h3 id="meetingAnalyticsTitle" class="text-xl font-medium text-gray-800 mb-1"></h3>
+                    <p id="meetingAnalyticsDate" class="text-sm text-gray-500 mb-4"></p>
+                    
+                    <div class="mb-4">
+                        <label for="roleViewToggle" class="label-text">View As:</label>
+                        <select id="roleViewToggle" class="select-field w-auto">
+                            <option value="manager">Manager (All Participants)</option>
+                            <option value="user">My Stats (Current User)</option>
+                        </select>
+                    </div>
+
+                    <div class="analytics-section">
+                        <h3>Overall Stats</h3>
+                        <div class="analytics-list-item">
+                            <span>Total Duration:</span>
+                            <span id="maTotalDuration" class="font-semibold">N/A</span>
+                        </div>
+                         <div class="analytics-list-item">
+                            <span>Number of Participants:</span>
+                            <span id="maParticipantCount" class="font-semibold">N/A</span>
+                        </div>
+                    </div>
+
+                    <div class="analytics-section">
+                        <h3 id="maSpeakerTimesTitle">Speaker Time Breakdown</h3>
+                        <div id="maSpeakerTimesList">
+                            </div>
+                    </div>
+                     <div class="analytics-section">
+                        <h3 id="maNudgesTitle">Nudges Generated</h3>
+                        <div id="maNudgesList">
+                            </div>
+                    </div>
+                    <p id="noMeetingAnalyticsMessage" class="text-gray-500 mt-4 hidden">No detailed analytics available for this meeting yet.</p>
+                </div>
+
+                <div id="globalAnalyticsView" class="view app-container"> <h2 class="text-2xl font-semibold text-gray-700 mb-6">SIA Usage Analytics (Global)</h2>
+                
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="analytics-card">
+                            <div id="totalMeetingsStat" class="value">0</div>
+                            <div class="label">Total Meetings Scheduled</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div id="configuredMeetingsStat" class="value">0</div>
+                            <div class="label">Meetings Configured w/ SIA</div>
+                        </div>
+                        <div class="analytics-card">
+                            <div id="summariesGeneratedStat" class="value">0</div>
+                            <div class="label">Summaries Generated</div>
+                        </div>
+                    </div>
+                
+                    <div class="analytics-section">
+                        <h3>Average Settings</h3>
+                        <div id="avgTimeLimitStat" class="analytics-list-item">
+                            <span>Avg. Time Limit Per Speaker:</span>
+                            <span class="font-semibold">N/A</span>
+                        </div>
+                    </div>
+                
+                    <div class="analytics-section">
+                        <h3>Popular Meeting Settings</h3>
+                        <div id="popularSettingsList">
+                            </div>
+                    </div>
+                </div>
+
+                <div id="settingsView" class="view app-container">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-6">Application Settings</h2>
+                    <div class="settings-tabs">
+                        <button id="globalSettingsTabBtn" class="settings-tab-button active" data-tab="globalSettingsContent">Global Settings</button>
+                        <button id="integrationsTabBtn" class="settings-tab-button" data-tab="integrationsContent">Integrations</button>
+                    </div>
+
+                    <div id="globalSettingsContent" class="settings-tab-content active">
+                        <form id="globalSettingsForm">
+                            <div class="settings-group">
+                                <h3>Default Meeting Presets</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="globalTimeLimit" class="label-text">Default Time Limit Per Speaker (min):</label>
+                                        <input type="number" id="globalTimeLimit" name="globalTimeLimit" class="input-field" value="3">
+                                    </div>
+                                    <div>
+                                        <label for="globalMeetingMode" class="label-text">Default Meeting Mode:</label>
+                                        <select id="globalMeetingMode" name="globalMeetingMode" class="select-field">
+                                            <option value="person">By Person</option>
+                                            <option value="project">By Project/Task</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label for="globalSpeakerOrder" class="label-text">Default Speaker Order Logic:</label>
+                                        <select id="globalSpeakerOrder" name="globalSpeakerOrder" class="select-field">
+                                            <option value="shuffle">Shuffle</option>
+                                            <option value="roundrobin">Round Robin</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mt-4 space-y-2">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="globalEnableVagueNudges" name="globalEnableVagueNudges" checked>
+                                        Enable Vague Update Nudges by Default
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="globalEnableOffTopicNudges" name="globalEnableOffTopicNudges" checked>
+                                        Enable Off-Topic Redirection by Default
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="globalEnableSummaryGeneration" name="globalEnableSummaryGeneration" checked>
+                                        Enable Automatic Summary Generation by Default
+                                    </label>
+                                </div>
+                            </div>
     
-    fetch(filename)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.text();
-        })
-        .then(csvData => {
-            csvData = csvData.replace(/\r/g, '');
-            const lines = csvData.split('\n');
-            const headers = lines[0].split(',');
+                            <div class="settings-group">
+                                <h3>AI Feature Preferences</h3>
+                                 <div>
+                                    <label for="globalTranslationLanguage" class="label-text">Default Translation Language:</label>
+                                    <select id="globalTranslationLanguage" name="globalTranslationLanguage" class="select-field">
+                                        <option value="en">English</option>
+                                        <option value="es">Spanish</option>
+                                        <option value="fr">French</option>
+                                        <option value="auto">Auto-Detect</option>
+                                    </select>
+                                </div>
+                                <div class="mt-4 space-y-2">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="globalEnableToneCheck" name="globalEnableToneCheck">
+                                        Globally Enable Politeness/Tone Checking
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="globalAnonymizeReports" name="globalAnonymizeReports">
+                                        Default to Anonymized Reporting
+                                    </label>
+                                </div>
+                            </div>
+    
+                            <div class="settings-group">
+                                <h3>Privacy & Data Settings</h3>
+                                <div>
+                                    <label for="globalDataRetention" class="label-text">Data Retention Policy:</label>
+                                    <select id="globalDataRetention" name="globalDataRetention" class="select-field">
+                                        <option value="90days">90 Days</option>
+                                        <option value="1year">1 Year</option>
+                                        <option value="indefinite">Indefinite (Manual Deletion)</option>
+                                    </select>
+                                </div>
+                                <div class="mt-4">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="globalOptOutAnalytics" name="globalOptOutAnalytics">
+                                        Opt-out of AI Engagement Analytics Contribution
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="settings-group">
+                                <h3>Account & Profile</h3>
+                                <div>
+                                    <label class="label-text">Connected Account:</label>
+                                    <p id="connectedAccountDisplay" class="text-gray-700 p-2 bg-gray-100 rounded-md">Not Connected</p>
+                                </div>
+                                <div class="mt-4">
+                                    <label for="globalTimeZone" class="label-text">Time Zone:</label>
+                                    <select id="globalTimeZone" name="globalTimeZone" class="select-field">
+                                        <option value="America/New_York">America/New_York (ET)</option>
+                                        <option value="America/Chicago">America/Chicago (CT)</option>
+                                        <option value="America/Denver">America/Denver (MT)</option>
+                                        <option value="America/Los_Angeles">America/Los_Angeles (PT)</option>
+                                        <option value="Europe/London">Europe/London (GMT/BST)</option>
+                                    </select>
+                                </div>
+                            </div>
+    
+                            <div class="settings-group">
+                                <h3>Appearance & Accessibility</h3>
+                                <div>
+                                    <label for="globalTheme" class="label-text">Theme:</label>
+                                    <select id="globalTheme" name="globalTheme" class="select-field">
+                                        <option value="light">Light Mode</option>
+                                        <option value="dark">Dark Mode (Coming Soon)</option>
+                                    </select>
+                                </div>
+                                 <div class="mt-4">
+                                    <label for="globalFontSize" class="label-text">Font Size:</label>
+                                    <select id="globalFontSize" name="globalFontSize" class="select-field">
+                                        <option value="small">Small</option>
+                                        <option value="medium" selected>Medium</option>
+                                        <option value="large">Large</option>
+                                    </select>
+                                </div>
+                            </div>
+    
+                            <div class="mt-8 flex justify-end">
+                                <button type="submit" class="button-primary">Save Global Settings</button>
+                            </div>
+                        </form>
+                         <div id="globalSettingsSavedMessage" class="mt-4 p-3 bg-green-100 text-green-700 border border-green-300 rounded-md hidden">
+                            Global settings saved successfully!
+                        </div>
+                    </div>
 
-            if (headers.length > 0) {
-                for (let i = 1; i < lines.length+1; i++) {
-                    const line = lines[i]?.trim() ?? "";
-                    if (line) {
-                        const values = line.split(',');
-                        if (values.length === headers.length) {
-                            const questionData = {};
-                            for (let j = 0; j < headers.length; j++) {
-                                questionData[headers[j]] = values[j];
-                            }
-                            questions.push(questionData);
-                        } else {
-                            console.warn(`Skipping line ${i + 1} due to incorrect number of values. Line: ${line}`);
-                        }
-                    }
+                    <div id="integrationsContent" class="settings-tab-content">
+                        <h3>Integrate SIA with your favorite tools</h3>
+                        <p class="text-gray-600 mb-6">Connect to project management, calendar, and chat applications.</p>
+                        
+                        <div id="integrationCardsContainer" class="integration-grid">
+                            <!-- Integration cards will be populated here by JS -->
+                        </div>
+                        
+                        <div class="settings-group mt-8">
+                             <h4>Integration Defaults</h4>
+                             <div class="p-4 border border-gray-200 rounded-md">
+                                <label for="globalDefaultProjectToolTab" class="label-text">Default Project Link for New Meetings (if applicable):</label>
+                                <input type="text" id="globalDefaultProjectToolTab" name="globalDefaultProjectToolTab" class="input-field" placeholder="e.g., 'Team Alpha Board' in Jira">
+                                <p class="sub-label-text">This can be overridden per meeting.</p>
+                             </div>
+                             <div class="mt-4">
+                                <label for="globalDefaultChatToolTab" class="label-text">Default Chat Tool for Notifications:</label>
+                                <select id="globalDefaultChatToolTab" name="globalDefaultChatToolTab" class="select-field">
+                                    <option value="zoom">Zoom Chat</option>
+                                    <option value="slack">Slack</option>
+                                    <option value="teams">MS Teams</option>
+                                </select>
+                            </div>
+                        </div>
+
+                         <div class="mt-8 flex justify-end">
+                            <button id="saveIntegrationsBtn" class="button-primary">Save Integration Settings</button>
+                        </div>
+                        <div id="integrationsSettingsSavedMessage" class="mt-4 p-3 bg-green-100 text-green-700 border border-green-300 rounded-md hidden">
+                            Integration settings saved!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- New Profile View -->
+                <div id="profileView" class="view app-container">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-6">Your Profile</h2>
+                    <div class="flex flex-col items-center md:flex-row md:items-start md:space-x-8">
+                        <div class="profile-avatar-placeholder mb-6 md:mb-0">
+                            <span id="profileAvatarInitials"></span>
+                        </div>
+                        <div class="flex-grow">
+                            <div class="profile-section">
+                                <h3>Account Information</h3>
+                                <div class="profile-info-item">
+                                    <span class="label">Name: </span>
+                                    <span id="profileName" class="value"></span>
+                                </div>
+                                <div class="profile-info-item">
+                                    <span class="label">Connected via: </span>
+                                    <span id="profileProvider" class="value"></span>
+                                </div>
+                                <div class="profile-info-item">
+                                    <span class="label">Simulated Role: </span>
+                                    <span id="profileRole" class="value"></span>
+                                </div>
+                                <div class="profile-info-item">
+                                    <span class="label">Joined SIA: </span>
+                                    <span class="value">May 15, 2024 (Simulated)</span>
+                                </div>
+                            </div>
+                             <div class="profile-section">
+                                <h3>Contact</h3>
+                                 <div class="profile-info-item">
+                                    <span class="label">Email: </span>
+                                    <span id="profileEmail" class="value">user@example.com (Simulated)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="mt-8 text-center">
+                        <button class="button-secondary">Edit Profile (Not Implemented)</button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentUser = null; 
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        const nextMonday = new Date(today);
+        nextMonday.setDate(today.getDate() + (1 + 7 - today.getDay()) % 7);
+        if (nextMonday <= today) nextMonday.setDate(nextMonday.getDate() + 7);
+
+
+        const meetings = [
+            { id: 'm1', title: 'Daily Standup - Team Alpha', date: tomorrow, time: '9:00 AM' },
+            { id: 'm2', title: 'Project Phoenix Sync', date: tomorrow, time: '11:30 AM' },
+            { id: 'm3', title: 'Sprint Planning - Q3 Goals', date: nextMonday, time: '2:00 PM' },
+            { id: 'm4', title: 'Retro - Sprint 2', date: new Date(today.getFullYear(), today.getMonth(), 15), time: '3:00 PM'},
+            { id: 'm5', title: 'Client Demo Prep', date: new Date(today.getFullYear(), today.getMonth() + 1, 5), time: '10:00 AM'}
+        ];
+        let meetingConfigurations = {
+             'm1': { 
+                timeLimitPerSpeaker: 3, enableReminders: true, generateReport: true, emailReport: false, enforceTimeboxing: true, nudgeVagueUpdates: true, redirectOffTopic: true, 
+                summaryText: "Team Alpha Standup:\n- Dev A: Progress on feature X.\n- Dev B: Blocked by API Y.\n- QA Z: Testing complete for story 123.",
+                analyticsData: {
+                    totalDuration: '25m 10s', participants: 3,
+                    speakerTimes: [ { name: 'Dev A', time: '8m 30s' }, { name: 'Dev B', time: '7m 15s' }, { name: 'QA Z', time: '9m 25s' } ],
+                    nudges: [ { name: 'Dev B', type: 'Speaking too long', count: 1 }, { name: 'Dev A', type: 'Vague Update', count: 1 } ]
                 }
-            } else {
-                console.error("No headers found in CSV data.");
-                alert("Error loading questions. CSV file might be empty or incorrectly formatted.");
-                return;
+            },
+             'm2': { 
+                timeLimitPerSpeaker: 7, enableReminders: true, generateReport: true, emailReport: true, enforceTimeboxing: true,
+                summaryText: "Project Phoenix Sync Summary:\n- Alice: Updated on UI components, 80% done.\n- Bob: Backend API integration ongoing, facing minor delays.\n- Charlie: Testing new build, found 2 critical bugs.\n\nBlockers:\n- Bob: Waiting for updated API specs from external team.\n\nAction Items:\n- Alice to finalize UI by EOD tomorrow.\n- Charlie to log bugs in Jira.",
+                analyticsData: {
+                    totalDuration: '33m 45s', participants: 3,
+                    speakerTimes: [ { name: 'Alice', time: '10m 00s' }, { name: 'Bob', time: '12m 30s' }, { name: 'Charlie', time: '11m 15s' } ],
+                    nudges: [ { name: 'Bob', type: 'Off-topic', count: 2 } ]
+                }
+            },
+            'm4': { 
+                timeLimitPerSpeaker: 5, enableReminders: false, generateReport: true, emailReport: true, enforceTimeboxing: false, nudgeVagueUpdates: true, redirectOffTopic: false, 
+                summaryText: "Sprint 2 Retro:\n- What went well: Team collaboration.\n- What didn't: Unclear requirements for story ABC.\n- Action: Improve requirement gathering process." 
             }
+        };
+        let globalSettings = { 
+            globalTimeLimit: 3, globalMeetingMode: 'person', globalSpeakerOrder: 'shuffle',
+            globalEnableVagueNudges: true, globalEnableOffTopicNudges: true, globalEnableSummaryGeneration: true,
+            globalTranslationLanguage: 'en',
+            globalEnableToneCheck: false, globalAnonymizeReports: false, globalDataRetention: '90days',
+            globalOptOutAnalytics: false, globalTimeZone: 'America/New_York', globalTheme: 'light', globalFontSize: 'medium'
+        };
+        // Mock data for integrations status
+        let availableIntegrations = [
+            { id: 'googleCalendar', name: 'Google Calendar', connected: true, icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#4285F4"><path d="M6 2L6 4L5 4C3.89543 4 3 4.89543 3 6L3 8L21 8L21 6C21 4.89543 20.1046 4 19 4L18 4L18 2L16 2L16 4L8 4L8 2L6 2ZM3 10L3 20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V10H3ZM15 14H17V16H15V14ZM15 18H17V20H15V18ZM11 14H13V16H11V14ZM11 18H13V20H11V18ZM7 14H9V16H7V14ZM7 18H9V20H7V18Z"></path></svg>' },
+            { id: 'jira', name: 'Jira', connected: false, icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#0052CC"><path d="M12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2ZM10.8582 16.5558C10.4587 16.1802 10.1057 15.7292 9.85715 15.2106L12.0005 12.8813L14.1426 15.2106C13.8945 15.7292 13.5411 16.1802 13.1412 16.5558C12.7831 16.8924 12.4016 17.125 12.0005 17.2458C11.5989 17.125 11.2173 16.8924 10.8582 16.5558ZM8.44385 12.8813L10.7621 10.7626L12.0005 9.3484L13.2384 10.7626L15.5571 12.8813L13.2384 15.0001L12.0005 16.4142L10.7621 15.0001L8.44385 12.8813ZM13.1412 7.44423C13.5411 7.81982 13.8945 8.27083 14.1426 8.78942L12.0005 11.1187L9.85715 8.78942C10.1057 8.27083 10.4587 7.81982 10.8582 7.44423C11.2168 7.10762 11.5984 6.87503 12.0005 6.75424C12.4016 6.87503 12.7831 7.10762 13.1412 7.44423Z"></path></svg>' },
+            { id: 'ado', name: 'ADO', connected: true, icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#0078D4"><path d="M15.21 2.44L14.44 4.33L16.67 7.22L8.94 7.22L6.62 4.16L5.79 2.33L0.5 12L5.79 21.67L6.62 19.84L8.94 16.78L16.67 16.78L14.44 19.67L15.21 21.56L23.5 12L15.21 2.44Z"></path></svg>' },
+            { id: 'monday', name: 'Monday.com', connected: false, icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="6" cy="12" r="3" fill="#FF158A"></circle><circle cx="12" cy="12" r="3" fill="#00C875"></circle><circle cx="18" cy="12" r="3" fill="#5034FF"></circle></svg>' },
+            { id: 'asana', name: 'Asana', connected: true, icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="6" r="3" fill="#FF8F73"></circle><circle cx="12" cy="12" r="3" fill="#FF8F73"></circle><circle cx="12" cy="18" r="3" fill="#FF8F73"></circle></svg>' },
+            { id: 'slack', name: 'Slack', connected: true, icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#3AAF85"><path d="M5.04,15.12c0-1.44,1.08-2.64,2.4-2.64s2.4,1.2,2.4,2.64S8.88,17.76,7.44,17.76S5.04,16.56,5.04,15.12zm8.64-6.48 c-1.44,0-2.64-1.08-2.64-2.4S12.24,3.84,13.68,3.84s2.64,1.08,2.64,2.4S15.12,8.64,13.68,8.64zm0,3.84c-1.44,0-2.64,1.08-2.64,2.4 s1.2,2.64,2.64,2.64h5.28c1.44,0,2.64-1.2,2.64-2.64s-1.08-2.4-2.64-2.4H13.68zm-2.4,5.28c0,1.44-1.08,2.64-2.4,2.64S6.24,20.28,6.24,18.84 s1.08-2.4,2.4-2.4h2.64V17.76H8.64z M15.12,5.04c0-1.44,1.08-2.64,2.4-2.64S20.16,3.6,20.16,5.04S18.84,7.68,17.52,7.68 S15.12,6.48,15.12,5.04zm-6.48,8.64c1.44,0,2.64,1.08,2.64,2.4s-1.2,2.64-2.64,2.64H3.84c-1.44,0-2.64-1.2-2.64-2.64 s1.08-2.4,2.64-2.4H8.64z"></path></svg>' },
+            { id: 'trello', name: 'Trello', connected: false, icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#0079BF"><path d="M18 3H6C4.346 3 3 4.346 3 6V18C3 19.654 4.346 21 6 21H18C19.654 21 21 19.654 21 18V6C21 4.346 19.654 3 18 3ZM10 17H7V7H10V17ZM17 13H14V7H17V13Z"></path></svg>' }
+        ];
+        let integrationSettings = {
+            defaultProjectTool: '', 
+            defaultChatTool: 'zoom',
+            // Store connection status for each integration
+            jiraConnected: availableIntegrations.find(i=>i.id==='jira').connected,
+            adoConnected: availableIntegrations.find(i=>i.id==='ado').connected,
+            mondayConnected: availableIntegrations.find(i=>i.id==='monday').connected,
+            asanaConnected: availableIntegrations.find(i=>i.id==='asana').connected,
+            slackConnected: availableIntegrations.find(i=>i.id==='slack').connected,
+            trelloConnected: availableIntegrations.find(i=>i.id==='trello').connected,
+            googleCalendarConnected: availableIntegrations.find(i=>i.id==='googleCalendar').connected,
+        };
 
-            if (questions.length === 0) {
-                console.warn("No valid questions found in the CSV file.");
-                alert("No valid questions found in the CSV file. Please check its format.");
-                return;
-            }
 
-            showQuizContainer();
-            displayQuestion(questionIndex); // Display the first question
-
-           
-        })
-        .catch(error => {
-            console.error("Error loading CSV:", error);
-            alert("Error loading questions. Please try again later. Check the console for details.");
-        });
-}
+        const loginScreenEl = document.getElementById('loginScreen');
+        const appShellEl = document.getElementById('appShell');
         
-function displayQuestion(index) {
-    if (index < 0 || index >= questions.length) {
-        alert("No more questions available.");
-        return;
-    }
+        const views = {
+            home: document.getElementById('homeView'), 
+            config: document.getElementById('configView'),
+            summaries: document.getElementById('summariesView'), 
+            meetingAnalytics: document.getElementById('meetingAnalyticsView'), 
+            globalAnalytics: document.getElementById('globalAnalyticsView'), 
+            settings: document.getElementById('settingsView'),
+            profile: document.getElementById('profileView') 
+        };
+        const navLinks = {
+            home: document.getElementById('navHome'), 
+            summaries: document.getElementById('navSummaries'),
+            analytics: document.getElementById('navAnalytics'), 
+            settings: document.getElementById('navSettings'),
+            profile: document.getElementById('navProfile') 
+        };
 
-    currentQuestion = questions[index];
-    document.getElementById("question").innerText = currentQuestion.Question;
-    document.getElementById("answer").innerText = currentQuestion.Answer;
-    document.getElementById("hint").innerText = currentQuestion.Hint;
+        const connectWithGoogleBtn = document.getElementById('connectWithGoogleBtn'); 
+        const connectWithMicrosoftBtn = document.getElementById('connectWithMicrosoftBtn'); 
+        const iconSignInWithGoogleBtn = document.getElementById('iconSignInWithGoogleBtn'); 
+        
+        const logoutBtn = document.getElementById('logoutBtn');
+        
+        const meetingListViewEl = document.getElementById('meetingListView');
+        const calendarViewEl = document.getElementById('calendarView');
+        const toggleListViewBtn = document.getElementById('toggleListViewBtn');
+        const toggleCalendarViewBtn = document.getElementById('toggleCalendarViewBtn');
+        const meetingListEl = document.getElementById('meetingList');
+        const noMeetingsMessageEl = document.getElementById('noMeetingsMessage');
+        const calendarGridEl = document.getElementById('calendarGrid');
+        const calendarDayHeadersEl = document.getElementById('calendarDayHeaders');
+        const currentMonthYearEl = document.getElementById('currentMonthYear');
+        const prevMonthBtn = document.getElementById('prevMonthBtn');
+        const nextMonthBtn = document.getElementById('nextMonthBtn');
+        
+        const configMeetingTitleEl = document.getElementById('configMeetingTitle');
+        const configMeetingTimeEl = document.getElementById('configMeetingTime');
+        const configMeetingIdInput = document.getElementById('configMeetingId');
+        const configViewSummaryBtn = document.getElementById('configViewSummaryBtn');
+        const configViewAnalyticsBtn = document.getElementById('configViewAnalyticsBtn'); 
+        const meetingConfigForm = document.getElementById('meetingConfigForm');
+        const backToHomeBtn = document.getElementById('backToHomeBtn'); 
+        const cancelConfigBtn = document.getElementById('cancelConfigBtn');
+        const configSavedMessageEl = document.getElementById('configSavedMessage');
 
-    document.getElementById("answer").classList.add("hidden");
-    document.getElementById("hint").classList.add("hidden");
+        const summaryListContainerEl = document.getElementById('summaryListContainer');
+        const summaryContentContainerEl = document.getElementById('summaryContentContainer');
+        const summaryListEl = document.getElementById('summaryList');
+        const noSummariesMessageEl = document.getElementById('noSummariesMessage');
+        const summaryContentTitleEl = document.getElementById('summaryContentTitle');
+        const summaryContentDateEl = document.getElementById('summaryContentDate');
+        const summaryContentDisplayEl = document.getElementById('summaryContentDisplay');
+        const backToSummariesListBtn = document.getElementById('backToSummariesListBtn');
+        const summaryViewAnalyticsBtn = document.getElementById('summaryViewAnalyticsBtn'); 
 
-    // Speak the question by default when loaded:
-    speakText('question');
-}
+        const globalSettingsForm = document.getElementById('globalSettingsForm');
+        const connectedAccountDisplayEl = document.getElementById('connectedAccountDisplay');
+        const globalSettingsSavedMessageEl = document.getElementById('globalSettingsSavedMessage');
+
+        const totalMeetingsStatEl = document.getElementById('totalMeetingsStat');
+        const configuredMeetingsStatEl = document.getElementById('configuredMeetingsStat');
+        const summariesGeneratedStatEl = document.getElementById('summariesGeneratedStat');
+        const avgTimeLimitStatEl = document.getElementById('avgTimeLimitStat').querySelector('span:last-child');
+        const popularSettingsListEl = document.getElementById('popularSettingsList');
+
+        const meetingAnalyticsTitleEl = document.getElementById('meetingAnalyticsTitle');
+        const meetingAnalyticsDateEl = document.getElementById('meetingAnalyticsDate');
+        const roleViewToggleEl = document.getElementById('roleViewToggle');
+        const maTotalDurationEl = document.getElementById('maTotalDuration');
+        const maParticipantCountEl = document.getElementById('maParticipantCount');
+        const maSpeakerTimesTitleEl = document.getElementById('maSpeakerTimesTitle');
+        const maSpeakerTimesListEl = document.getElementById('maSpeakerTimesList');
+        const maNudgesTitleEl = document.getElementById('maNudgesTitle');
+        const maNudgesListEl = document.getElementById('maNudgesList');
+        const noMeetingAnalyticsMessageEl = document.getElementById('noMeetingAnalyticsMessage');
+        const backToHomeFromMeetingAnalyticsBtn = document.getElementById('backToHomeFromMeetingAnalyticsBtn'); 
+        let currentMeetingAnalyticsId = null; 
+        let currentSummaryMeetingId = null; 
+
+        const globalSettingsTabBtn = document.getElementById('globalSettingsTabBtn');
+        const integrationsTabBtn = document.getElementById('integrationsTabBtn');
+        const globalSettingsContentEl = document.getElementById('globalSettingsContent');
+        const integrationsContentEl = document.getElementById('integrationsContent');
+        const integrationCardsContainerEl = document.getElementById('integrationCardsContainer'); // New
+        const saveIntegrationsBtn = document.getElementById('saveIntegrationsBtn');
+        const integrationsSettingsSavedMessageEl = document.getElementById('integrationsSettingsSavedMessage');
+
+        const profileAvatarInitialsEl = document.getElementById('profileAvatarInitials');
+        const profileNameEl = document.getElementById('profileName');
+        const profileProviderEl = document.getElementById('profileProvider');
+        const profileRoleEl = document.getElementById('profileRole');
+        const profileEmailEl = document.getElementById('profileEmail');
 
 
-function nextQuestion() {
-    questionIndex++;
-    displayQuestion(questionIndex);
-}
+        let currentCalendarDate = new Date();
 
-function prevQuestion() {
-    if (questionIndex > 0) {
-        questionIndex--;
-        displayQuestion(questionIndex);
-    } else {
-        alert("You're already at the first question.");
-    }
-}
-
-function skipTenQuestions() {
-    if (questionIndex + 10 < questions.length) {
-        questionIndex += 10;
-        displayQuestion(questionIndex);
-    } else {
-        alert("There aren't that many questions left to skip.");
-    }
-}
-
-  
-        function showQuizContainer(){
-          document.getElementById('quiz-container').classList.remove('hidden');
+        function setActiveNavLink(viewId) {
+            const activeNavId = viewId === 'meetingAnalytics' ? 'home' : viewId; 
+            Object.values(navLinks).forEach(link => link.classList.remove('active'));
+            if (navLinks[activeNavId]) navLinks[activeNavId].classList.add('active');
         }
 
-        function speakText(elementId) {
-            let text = document.getElementById(elementId).innerText;
-            let speech = new SpeechSynthesisUtterance(text);
-            window.speechSynthesis.speak(speech);
-        }
 
-        function showHint() {
-            document.getElementById("hint").classList.remove("hidden");
-        }
-
-        function showAnswer() {
-            document.getElementById("answer").classList.remove("hidden");
-        }
-
-       
-        function showPage(pageId) {
-            document.getElementById('home').classList.add('hidden');
-            document.getElementById('quiz').classList.add('hidden');
-            document.getElementById('about').classList.add('hidden');
-            document.getElementById(pageId).classList.remove('hidden');
-
-            if (pageId === 'quiz') {
-                loadQuestionsFromCSV('Questions.csv'); // Make sure path is correct
+        function showView(viewId, context) { 
+            if (viewId === 'login') {
+                loginScreenEl.classList.add('active'); loginScreenEl.classList.remove('hidden');
+                appShellEl.classList.add('hidden');
+            } else {
+                loginScreenEl.classList.remove('active'); loginScreenEl.classList.add('hidden');
+                appShellEl.classList.remove('hidden'); appShellEl.style.display = 'flex';
+                Object.values(views).forEach(view => view.classList.remove('active'));
+                if (views[viewId]) {
+                    views[viewId].classList.add('active'); setActiveNavLink(viewId);
+                    if (viewId === 'summaries') {
+                        (context && context.meetingId) ? displaySummaryContent(context.meetingId) : populateSummariesList();
+                    } else if (viewId === 'settings') {
+                        switchSettingsTab('globalSettingsContent'); 
+                        loadGlobalSettingsToForm();
+                        loadIntegrationSettingsToForm(); 
+                        populateIntegrationCards(); // Populate cards when settings view is shown
+                    } else if (viewId === 'globalAnalytics') { 
+                        populateGlobalAnalytics();
+                    } else if (viewId === 'meetingAnalytics' && context && context.meetingId) {
+                        currentMeetingAnalyticsId = context.meetingId;
+                        populateMeetingAnalytics(context.meetingId);
+                    } else if (viewId === 'profile') {
+                        populateProfileView();
+                    }
+                } else {
+                    views.home.classList.add('active'); setActiveNavLink('home'); 
+                }
             }
         }
 
-        function closeMenu() {
-            const navbarCollapse = document.getElementById('navbarNav');
-            if (navbarCollapse.classList.contains('show')) {
-                new bootstrap.Collapse(navbarCollapse).toggle();
+        function login(provider) {
+            currentUser = { 
+                name: `${provider} User`, 
+                provider: provider, 
+                role: provider === 'Google' ? 'Manager' : 'User', 
+                email: `${provider.toLowerCase().replace(/\s+/g, '')}user@example.com` 
+            }; 
+            console.log(currentUser.name + ' "logged in"');
+            populateMeetingsList(); renderCalendar(); showView('home'); showCalendarView(); 
+        }
+        function logout() { currentUser = null; showView('login'); }
+        function formatMeetingTime(date, timeString, includeDay = true) {
+            const options = includeDay ? { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' } : { year: 'numeric', month: 'long', day: 'numeric' };
+            return `${date.toLocaleDateString(undefined, options)} at ${timeString}`;
+        }
+
+        function populateMeetingsList() {
+            meetingListEl.innerHTML = '';
+            if (meetings.length === 0) { noMeetingsMessageEl.classList.remove('hidden'); return; }
+            noMeetingsMessageEl.classList.add('hidden');
+            const sortedMeetings = [...meetings].sort((a,b) => a.date - b.date);
+            sortedMeetings.forEach(meeting => {
+                const item = document.createElement('div'); item.classList.add('meeting-item');
+                const config = meetingConfigurations[meeting.id];
+                const hasSummary = config && config.summaryText;
+                const hasAnalytics = config && config.analyticsData;
+                
+                item.innerHTML = `
+                    <div class="meeting-item-clickable-area">
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-lg font-medium text-gray-800">${meeting.title}</h4>
+                            <span class="text-xs px-2 py-1 rounded-full ${config ? 'bg-green-200 text-green-800' : 'bg-yellow-200 text-yellow-800'}">
+                                ${config ? 'Configured' : 'Needs Setup'}
+                            </span>
+                        </div>
+                        <p class="text-sm text-gray-500">${formatMeetingTime(meeting.date, meeting.time)}</p>
+                    </div>
+                    <div class="meeting-item-actions">
+                        ${hasSummary ? `<button class="button-link view-summary-btn" data-meeting-id="${meeting.id}">View Summary</button>` : ''}
+                        ${hasAnalytics ? `<button class="button-link view-meeting-analytics-btn" data-meeting-id="${meeting.id}">Analytics</button>` : ''}
+                    </div>
+                `;
+                item.querySelector('.meeting-item-clickable-area').addEventListener('click', () => loadMeetingConfig(meeting.id));
+                const summaryBtn = item.querySelector('.view-summary-btn');
+                if (summaryBtn) summaryBtn.addEventListener('click', (e) => { e.stopPropagation(); showView('summaries', { meetingId: meeting.id }); });
+                const analyticsBtn = item.querySelector('.view-meeting-analytics-btn');
+                if (analyticsBtn) analyticsBtn.addEventListener('click', (e) => { e.stopPropagation(); showView('meetingAnalytics', { meetingId: meeting.id }); });
+                
+                meetingListEl.appendChild(item);
+            });
+        }
+        
+        function renderCalendar() {
+            calendarGridEl.innerHTML = '';
+            const year = currentCalendarDate.getFullYear(), month = currentCalendarDate.getMonth();
+            currentMonthYearEl.textContent = `${currentCalendarDate.toLocaleString('default', { month: 'long' })} ${year}`;
+            const firstDayOfMonth = new Date(year, month, 1), lastDayOfMonth = new Date(year, month + 1, 0);
+            const daysInMonth = lastDayOfMonth.getDate(), startDayOfWeek = firstDayOfMonth.getDay();
+            if (calendarDayHeadersEl.children.length === 0) {
+                ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(name => calendarDayHeadersEl.appendChild(Object.assign(document.createElement('div'), { className: 'calendar-day-header', textContent: name })));
+            }
+            for (let i = 0; i < startDayOfWeek; i++) calendarGridEl.appendChild(Object.assign(document.createElement('div'), { className: 'calendar-day other-month' }));
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayCell = document.createElement('div'); dayCell.classList.add('calendar-day');
+                const dayNumberEl = Object.assign(document.createElement('span'), { className: 'day-number', textContent: day });
+                dayCell.appendChild(dayNumberEl);
+                const meetingsOnThisDay = meetings.filter(m => m.date.getFullYear() === year && m.date.getMonth() === month && m.date.getDate() === day);
+                meetingsOnThisDay.forEach(meeting => {
+                    const config = meetingConfigurations[meeting.id];
+                    const hasSummary = config && config.summaryText;
+                    const hasAnalytics = config && config.analyticsData;
+                    let indicatorText = `${meeting.time} - ${meeting.title}`;
+                    if (hasSummary) indicatorText += ' 📄';
+                    if (hasAnalytics) indicatorText += '📊';
+
+                    const meetingIndicator = Object.assign(document.createElement('span'), { 
+                        className: 'meeting-indicator', textContent: indicatorText,
+                        title: `${meeting.title} at ${meeting.time}${hasSummary ? ' (Summary)' : ''}${hasAnalytics ? ' (Analytics)' : ''}`
+                    });
+                    meetingIndicator.addEventListener('click', (e) => { 
+                        e.stopPropagation(); 
+                        if (hasAnalytics) showView('meetingAnalytics', { meetingId: meeting.id });
+                        else if (hasSummary) showView('summaries', { meetingId: meeting.id });
+                        else loadMeetingConfig(meeting.id);
+                    });
+                    dayCell.appendChild(meetingIndicator);
+                });
+                if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) dayNumberEl.classList.add('bg-indigo-500', 'text-white', 'rounded-full', 'px-2', 'py-1');
+                calendarGridEl.appendChild(dayCell);
             }
         }
+
+        function showListView() {
+            meetingListViewEl.classList.remove('hidden'); calendarViewEl.classList.add('hidden');
+            toggleListViewBtn.classList.remove('button-secondary'); toggleListViewBtn.classList.add('button-primary');
+            toggleCalendarViewBtn.classList.remove('button-primary'); toggleCalendarViewBtn.classList.add('button-secondary');
+        }
+        function showCalendarView() {
+            meetingListViewEl.classList.add('hidden'); calendarViewEl.classList.remove('hidden');
+            toggleListViewBtn.classList.add('button-secondary'); toggleListViewBtn.classList.remove('button-primary');
+            toggleCalendarViewBtn.classList.add('button-primary'); toggleCalendarViewBtn.classList.remove('button-secondary');
+            renderCalendar();
+        }
+        prevMonthBtn.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1); renderCalendar(); });
+        nextMonthBtn.addEventListener('click', () => { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1); renderCalendar(); });
+        toggleListViewBtn.addEventListener('click', showListView);
+        toggleCalendarViewBtn.addEventListener('click', showCalendarView);
+
+        function loadMeetingConfig(meetingId) {
+            const meeting = meetings.find(m => m.id === meetingId); if (!meeting) return;
+            configMeetingIdInput.value = meeting.id;
+            configMeetingTitleEl.textContent = meeting.title;
+            configMeetingTimeEl.textContent = formatMeetingTime(meeting.date, meeting.time);
+            const currentConfig = meetingConfigurations[meeting.id] || {
+                timeLimitPerSpeaker: globalSettings.globalTimeLimit, enableReminders: true, enforceTimeboxing: true,
+                nudgeVagueUpdates: globalSettings.globalEnableVagueNudges, redirectOffTopic: globalSettings.globalEnableOffTopicNudges, 
+                generateReport: globalSettings.globalEnableSummaryGeneration, emailReport: false, summaryText: null, analyticsData: null
+            };
+            meetingConfigForm.timeLimitPerSpeaker.value = currentConfig.timeLimitPerSpeaker;
+            meetingConfigForm.enableReminders.checked = currentConfig.enableReminders;
+            meetingConfigForm.enforceTimeboxing.checked = currentConfig.enforceTimeboxing;
+            meetingConfigForm.nudgeVagueUpdates.checked = currentConfig.nudgeVagueUpdates;
+            meetingConfigForm.redirectOffTopic.checked = currentConfig.redirectOffTopic;
+            meetingConfigForm.generateReport.checked = currentConfig.generateReport;
+            meetingConfigForm.emailReport.checked = currentConfig.emailReport;
+            
+            currentConfig.summaryText ? configViewSummaryBtn.classList.remove('hidden') : configViewSummaryBtn.classList.add('hidden');
+            configViewSummaryBtn.onclick = () => showView('summaries', { meetingId: meeting.id });
+
+            currentConfig.analyticsData ? configViewAnalyticsBtn.classList.remove('hidden') : configViewAnalyticsBtn.classList.add('hidden');
+            configViewAnalyticsBtn.onclick = () => showView('meetingAnalytics', { meetingId: meeting.id });
+
+            configSavedMessageEl.classList.add('hidden');
+            showView('config');
+        }
+
+        function saveMeetingConfig(event) {
+            event.preventDefault();
+            const meetingId = configMeetingIdInput.value;
+            let currentFullConfig = meetingConfigurations[meetingId] || {}; 
+            const formData = new FormData(event.target);
+
+            for (let [key, value] of formData.entries()) {
+                const el = event.target.elements[key];
+                currentFullConfig[key] = (el && el.type === 'checkbox') ? el.checked : value;
+            }
+            
+            const meeting = meetings.find(m => m.id === meetingId);
+            if (currentFullConfig.generateReport && !currentFullConfig.summaryText) {
+                currentFullConfig.summaryText = `Mock Summary for: ${meeting.title}\nDate: ${formatMeetingTime(meeting.date, meeting.time, false)}\n--------------------\n- Key point 1 discussed.\n- Action item: Follow up on X.\n- Blocker: Waiting for Y.`;
+            } else if (!currentFullConfig.generateReport) {
+                delete currentFullConfig.summaryText; 
+            }
+
+            if (!currentFullConfig.analyticsData) { 
+                 currentFullConfig.analyticsData = {
+                    totalDuration: `${Math.floor(Math.random() * 30) + 15}m ${Math.floor(Math.random()*60)}s`,
+                    participants: Math.floor(Math.random() * 5) + 2,
+                    speakerTimes: [{name: 'User A', time: '5m'}, {name: 'User B', time: '7m'}],
+                    nudges: [{name: 'User A', type: 'Vague Update', count: 1}]
+                };
+            }
+            
+            meetingConfigurations[meetingId] = currentFullConfig;
+
+            currentFullConfig.summaryText ? configViewSummaryBtn.classList.remove('hidden') : configViewSummaryBtn.classList.add('hidden');
+            currentFullConfig.analyticsData ? configViewAnalyticsBtn.classList.remove('hidden') : configViewAnalyticsBtn.classList.add('hidden');
+
+            console.log('Configuration saved for meeting ' + meetingId + ':', currentFullConfig);
+            configSavedMessageEl.classList.remove('hidden');
+            setTimeout(() => configSavedMessageEl.classList.add('hidden'), 3000);
+            populateMeetingsList(); renderCalendar();
+        }
+
+        function populateSummariesList() {
+            summaryListEl.innerHTML = '';
+            summaryListContainerEl.classList.remove('hidden'); summaryContentContainerEl.classList.add('hidden');
+            backToSummariesListBtn.classList.add('hidden');
+            const meetingsWithSummaries = meetings.filter(m => meetingConfigurations[m.id] && meetingConfigurations[m.id].summaryText);
+            if (meetingsWithSummaries.length === 0) { noSummariesMessageEl.classList.remove('hidden'); return; }
+            noSummariesMessageEl.classList.add('hidden');
+            meetingsWithSummaries.sort((a,b) => b.date - a.date);
+            meetingsWithSummaries.forEach(meeting => {
+                const item = Object.assign(document.createElement('div'), { className: 'summary-item' });
+                item.innerHTML = `<h4 class="text-md font-medium text-gray-800">${meeting.title}</h4><p class="text-sm text-gray-500">${formatMeetingTime(meeting.date, meeting.time)}</p>`;
+                item.addEventListener('click', () => displaySummaryContent(meeting.id));
+                summaryListEl.appendChild(item);
+            });
+        }
+        function displaySummaryContent(meetingId) {
+            currentSummaryMeetingId = meetingId; 
+            const meeting = meetings.find(m => m.id === meetingId);
+            const config = meetingConfigurations[meetingId];
+            if (meeting && config && config.summaryText) {
+                summaryContentTitleEl.textContent = meeting.title;
+                summaryContentDateEl.textContent = formatMeetingTime(meeting.date, meeting.time);
+                summaryContentDisplayEl.textContent = config.summaryText;
+                
+                if (config.analyticsData) {
+                    summaryViewAnalyticsBtn.classList.remove('hidden');
+                    summaryViewAnalyticsBtn.onclick = () => showView('meetingAnalytics', { meetingId: currentSummaryMeetingId });
+                } else {
+                    summaryViewAnalyticsBtn.classList.add('hidden');
+                }
+
+                summaryListContainerEl.classList.add('hidden');
+                summaryContentContainerEl.classList.remove('hidden');
+                backToSummariesListBtn.classList.remove('hidden');
+            } else { populateSummariesList(); }
+        }
+        backToSummariesListBtn.addEventListener('click', () => populateSummariesList());
+
+        function loadGlobalSettingsToForm() {
+            if (!currentUser) return;
+            connectedAccountDisplayEl.textContent = `${currentUser.provider} User (${currentUser.name})`;
+            Object.keys(globalSettings).forEach(key => {
+                const el = globalSettingsForm.elements[key];
+                if (el) el.type === 'checkbox' ? el.checked = globalSettings[key] : el.value = globalSettings[key];
+            });
+        }
+        function saveGlobalSettings(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            for (let [key, value] of formData.entries()) {
+                 const el = event.target.elements[key];
+                globalSettings[key] = (el && el.type === 'checkbox') ? el.checked : value;
+            }
+            console.log("Global Settings Saved:", globalSettings);
+            globalSettingsSavedMessageEl.classList.remove('hidden');
+            setTimeout(() => globalSettingsSavedMessageEl.classList.add('hidden'), 3000);
+        }
+        globalSettingsForm.addEventListener('submit', saveGlobalSettings);
+
+        function populateIntegrationCards() {
+            integrationCardsContainerEl.innerHTML = '';
+            availableIntegrations.forEach(integration => {
+                const card = document.createElement('div');
+                card.classList.add('integration-card');
+                const isConnected = integrationSettings[`${integration.id}Connected`];
+                if (isConnected) {
+                    card.classList.add('connected');
+                }
+
+                card.innerHTML = `
+                    <div class="integration-icon">${integration.icon}</div>
+                    <div>
+                        <div class="integration-name">${integration.name}</div>
+                        <div class="integration-status ${isConnected ? 'connected' : 'not-connected'}">
+                            ${isConnected ? '(Connected)' : '(Not Connected)'}
+                        </div>
+                        <button class="button-sm ${isConnected ? 'button-secondary' : 'button-primary'} toggle-integration-btn" data-integration-id="${integration.id}">
+                            ${isConnected ? 'Disconnect' : 'Connect'}
+                        </button>
+                    </div>
+                `;
+                integrationCardsContainerEl.appendChild(card);
+            });
+
+            // Add event listeners to new connect/disconnect buttons
+            document.querySelectorAll('.toggle-integration-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const integrationId = e.target.dataset.integrationId;
+                    integrationSettings[`${integrationId}Connected`] = !integrationSettings[`${integrationId}Connected`];
+                    console.log(`${integrationId} connection status: ${integrationSettings[`${integrationId}Connected`]}`);
+                    populateIntegrationCards(); // Re-render cards
+                    // In a real app, you'd also update the integrationSettings object for saving.
+                });
+            });
+        }
+
+        function loadIntegrationSettingsToForm() {
+            document.getElementById('globalDefaultProjectToolTab').value = integrationSettings.defaultProjectTool;
+            document.getElementById('globalDefaultChatToolTab').value = integrationSettings.defaultChatTool;
+            populateIntegrationCards(); // Also populate the cards
+        }
+
+        function saveIntegrationSettings() {
+            integrationSettings.defaultProjectTool = document.getElementById('globalDefaultProjectToolTab').value;
+            integrationSettings.defaultChatTool = document.getElementById('globalDefaultChatToolTab').value;
+            // Individual connection statuses are already updated in integrationSettings by toggle buttons
+            console.log("Integration Settings Saved:", integrationSettings);
+            integrationsSettingsSavedMessageEl.classList.remove('hidden');
+            setTimeout(() => integrationsSettingsSavedMessageEl.classList.add('hidden'), 3000);
+        }
+        saveIntegrationsBtn.addEventListener('click', saveIntegrationSettings);
+
+
+        function populateGlobalAnalytics() { 
+            totalMeetingsStatEl.textContent = meetings.length;
+            const configuredCount = Object.keys(meetingConfigurations).length;
+            configuredMeetingsStatEl.textContent = configuredCount;
+            const summariesCount = Object.values(meetingConfigurations).filter(c => c.summaryText).length;
+            summariesGeneratedStatEl.textContent = summariesCount;
+
+            let totalTimeLimit = 0, meetingsWithTimeLimit = 0;
+            Object.values(meetingConfigurations).forEach(config => {
+                if (config.timeLimitPerSpeaker) { totalTimeLimit += parseInt(config.timeLimitPerSpeaker, 10); meetingsWithTimeLimit++; }
+            });
+            avgTimeLimitStatEl.textContent = meetingsWithTimeLimit > 0 ? (totalTimeLimit / meetingsWithTimeLimit).toFixed(1) + ' min' : 'N/A';
+
+            const popularSettings = { 'Enforce Time-boxing': 0, 'Enable Reminders': 0, 'Nudge Vague Updates': 0, 'Redirect Off-topic': 0, 'Generate Report': 0, 'Email Report': 0 };
+            Object.values(meetingConfigurations).forEach(config => {
+                if (config.enforceTimeboxing) popularSettings['Enforce Time-boxing']++;
+                if (config.enableReminders) popularSettings['Enable Reminders']++;
+                if (config.nudgeVagueUpdates) popularSettings['Nudge Vague Updates']++;
+                if (config.redirectOffTopic) popularSettings['Redirect Off-topic']++;
+                if (config.generateReport) popularSettings['Generate Report']++;
+                if (config.emailReport) popularSettings['Email Report']++;
+            });
+            popularSettingsListEl.innerHTML = '';
+            Object.entries(popularSettings).forEach(([setting, count]) => {
+                popularSettingsListEl.appendChild(Object.assign(document.createElement('div'), { 
+                    className: 'analytics-list-item', 
+                    innerHTML: `<span>${setting}:</span> <span class="font-semibold">${count} meetings</span>`
+                }));
+            });
+        }
+
+        function populateMeetingAnalytics(meetingId) {
+            const meeting = meetings.find(m => m.id === meetingId);
+            const config = meetingConfigurations[meetingId];
+            const analyticsData = config ? config.analyticsData : null;
+
+            if (!meeting) { showView('home'); return; } 
+
+            meetingAnalyticsTitleEl.textContent = meeting.title;
+            meetingAnalyticsDateEl.textContent = formatMeetingTime(meeting.date, meeting.time);
+            
+            maSpeakerTimesListEl.innerHTML = ''; 
+            maNudgesListEl.innerHTML = ''; 
+
+            if (analyticsData) {
+                noMeetingAnalyticsMessageEl.classList.add('hidden');
+                maTotalDurationEl.textContent = analyticsData.totalDuration || 'N/A';
+                maParticipantCountEl.textContent = analyticsData.participants || 'N/A';
+
+                const currentRole = roleViewToggleEl.value;
+                const isManagerView = currentRole === 'manager';
+                const simulatedCurrentUser = currentUser.provider === 'Google' ? 'Dev A' : (currentUser.provider === 'Microsoft' ? 'Alice' : 'Unknown User');
+
+                maSpeakerTimesTitleEl.textContent = isManagerView ? "Speaker Time Breakdown (All)" : `Your Speaking Time (${simulatedCurrentUser})`;
+                analyticsData.speakerTimes.forEach(speaker => {
+                    if (isManagerView || speaker.name === simulatedCurrentUser) {
+                        const item = document.createElement('div'); item.classList.add('participant-list-item');
+                        item.innerHTML = `<span class="font-medium">${speaker.name}:</span> ${speaker.time}`;
+                        maSpeakerTimesListEl.appendChild(item);
+                    }
+                });
+                 if (maSpeakerTimesListEl.children.length === 0 && !isManagerView) {
+                     maSpeakerTimesListEl.innerHTML = `<p class="text-gray-500 text-sm">No speaking time recorded for you in this meeting.</p>`;
+                 }
+
+                maNudgesTitleEl.textContent = isManagerView ? "Nudges Generated (All)" : `Your Nudges (${simulatedCurrentUser})`;
+                analyticsData.nudges.forEach(nudge => {
+                     if (isManagerView || nudge.name === simulatedCurrentUser) {
+                        const item = document.createElement('div'); item.classList.add('participant-list-item');
+                        item.innerHTML = `<span class="font-medium">${nudge.name}:</span> ${nudge.type} (Count: ${nudge.count})`;
+                        maNudgesListEl.appendChild(item);
+                    }
+                });
+                 if (maNudgesListEl.children.length === 0 && !isManagerView) {
+                     maNudgesListEl.innerHTML = `<p class="text-gray-500 text-sm">No nudges recorded for you in this meeting.</p>`;
+                 }
+            } else {
+                noMeetingAnalyticsMessageEl.classList.remove('hidden');
+                maTotalDurationEl.textContent = 'N/A'; maParticipantCountEl.textContent = 'N/A';
+            }
+        }
+        roleViewToggleEl.addEventListener('change', () => {
+            if (currentMeetingAnalyticsId) populateMeetingAnalytics(currentMeetingAnalyticsId);
+        });
+        backToHomeFromMeetingAnalyticsBtn.addEventListener('click', () => showView('home')); 
+
+        function populateProfileView() {
+            if (currentUser) {
+                profileAvatarInitialsEl.textContent = currentUser.name.substring(0, 1).toUpperCase();
+                profileNameEl.textContent = currentUser.name;
+                profileProviderEl.textContent = currentUser.provider;
+                profileRoleEl.textContent = currentUser.role;
+                profileEmailEl.textContent = currentUser.email;
+            } else {
+                profileNameEl.textContent = "N/A";
+                profileProviderEl.textContent = "N/A";
+                profileRoleEl.textContent = "N/A";
+                profileEmailEl.textContent = "N/A";
+                profileAvatarInitialsEl.textContent = "?";
+            }
+        }
+
+
+        // Event listeners for the new login screen
+        connectWithGoogleBtn.addEventListener('click', () => login('Google'));
+        connectWithMicrosoftBtn.addEventListener('click', () => login('Microsoft')); 
+        iconSignInWithGoogleBtn.addEventListener('click', () => login('Google')); 
+        
+        logoutBtn.addEventListener('click', logout);
+        backToHomeBtn.addEventListener('click', () => { populateMeetingsList(); renderCalendar(); showView('home'); }); 
+        cancelConfigBtn.addEventListener('click', () => { populateMeetingsList(); renderCalendar(); showView('home'); }); 
+        meetingConfigForm.addEventListener('submit', saveMeetingConfig);
+
+        navLinks.home.addEventListener('click', (e) => { e.preventDefault(); populateMeetingsList(); renderCalendar(); showView('home'); }); 
+        navLinks.summaries.addEventListener('click', (e) => { e.preventDefault(); showView('summaries'); });
+        navLinks.analytics.addEventListener('click', (e) => { e.preventDefault(); showView('globalAnalytics'); }); 
+        navLinks.settings.addEventListener('click', (e) => { e.preventDefault(); showView('settings'); });
+        navLinks.profile.addEventListener('click', (e) => { e.preventDefault(); showView('profile'); }); 
+
+        // Settings Tab Switching
+        function switchSettingsTab(tabContentId) {
+            document.querySelectorAll('.settings-tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.settings-tab-button').forEach(button => button.classList.remove('active'));
+            document.getElementById(tabContentId).classList.add('active');
+            document.querySelector(`.settings-tab-button[data-tab="${tabContentId}"]`).classList.add('active');
+        }
+
+        globalSettingsTabBtn.addEventListener('click', () => switchSettingsTab('globalSettingsContent'));
+        integrationsTabBtn.addEventListener('click', () => switchSettingsTab('integrationsContent'));
+
+
+        showView('login');
     </script>
 </body>
 </html>
